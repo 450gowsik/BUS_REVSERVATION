@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OnyxBus — Book Bus Tickets Online</title>
+    <meta name="description" content="Book bus tickets online across India. Compare prices, routes, and operators.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700;9..40,800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <nav class="topnav">
+        <div class="container nav-inner">
+            <a href="/" class="brand">
+                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="4" width="18" height="12" rx="2" />
+                    <path d="M3 10h18" />
+                    <circle cx="7" cy="19" r="2" />
+                    <circle cx="17" cy="19" r="2" />
+                </svg>
+                <span>OnyxBus</span>
+            </a>
+            <div class="nav-links">
+                <a href="/" class="nav-item active">Bus Tickets</a>
+                <a href="/my-trips.html" class="nav-item">My Trips</a>
+                <a href="/cancel.html" class="nav-item">Cancel Ticket</a>
+                <a href="/contact.html" class="nav-item">Contact Us</a>
+                <button class="btn-nav-login"
+                    onclick="document.getElementById('signin-modal').style.display='block'">Sign In</button>
+            </div>
+        </div>
+    </nav>
+
+    <section class="hero-banner">
+        <div class="container">
+            <div class="hero-text">
+                <h1>Book Bus Tickets <span>Hassle-Free</span><br>Across India</h1>
+                <p class="hero-sub">Compare 100+ operators, lowest prices guaranteed. Trusted by 50,000+ travellers.</p>
+            </div>
+            <div class="search-card">
+                <div class="search-row">
+                    <div class="field field-from">
+                        <label>From</label>
+                        <div class="field-value">
+                            <input type="text" id="fromCity" value="Chennai" placeholder="Departure city">
+                        </div>
+                    </div>
+                    <button class="swap-icon" type="button" onclick="swapCities()" aria-label="Swap cities">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2.5">
+                            <path d="M7 16V4m0 0L3 8m4-4l4 4M17 8v12m0 0l4-4m-4 4l-4-4" />
+                        </svg>
+                    </button>
+                    <div class="field field-to">
+                        <label>To</label>
+                        <div class="field-value">
+                            <input type="text" id="toCity" value="Bangalore" placeholder="Arrival city">
+                        </div>
+                    </div>
+                    <div class="field field-date">
+                        <label>Date of Journey</label>
+                        <div class="field-value">
+                            <input type="date" id="travelDate">
+                        </div>
+                    </div>
+                    <button class="btn-search" onclick="searchBuses()">SEARCH BUSES</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="trust-strip">
+        <div class="container trust-row">
+            <div class="trust-item">
+                <div class="trust-icon ic-safe">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#27ae60" stroke-width="2">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                    </svg>
+                </div>
+                <div><strong>Safe & Secure</strong><span>100% safe payments</span></div>
+            </div>
+            <div class="trust-item">
+                <div class="trust-icon ic-price">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2980b9" stroke-width="2">
+                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                        <polyline points="22 4 12 14.01 9 11.01" />
+                    </svg>
+                </div>
+                <div><strong>Best Prices</strong><span>Always lowest fares</span></div>
+            </div>
+            <div class="trust-item">
+                <div class="trust-icon ic-users">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#d35400" stroke-width="2">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                        <circle cx="9" cy="7" r="4" />
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                    </svg>
+                </div>
+                <div><strong>50K+ Users</strong><span>Trust our platform</span></div>
+            </div>
+            <div class="trust-item">
+                <div class="trust-icon ic-support">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#c0392b" stroke-width="2">
+                        <circle cx="12" cy="12" r="10" />
+                        <polyline points="12 6 12 12 16 14" />
+                    </svg>
+                </div>
+                <div><strong>24/7 Support</strong><span>Always here for you</span></div>
+            </div>
+        </div>
+    </section>
+
+    <main class="results-area">
+        <div class="container results-layout">
+            <aside class="sidebar" id="sidebar">
+                <div class="sidebar-head">
+                    <h4>FILTERS</h4>
+                    <button class="filter-clear" onclick="clearFilters()">Clear All</button>
+                </div>
+                <div class="sidebar-section">
+                    <h5>Bus Type</h5>
+                    <label class="check-row"><input type="checkbox" id="f-ac" onchange="applyFilters()" checked> AC Sleeper / Seater</label>
+                    <label class="check-row"><input type="checkbox" id="f-nonac" onchange="applyFilters()" checked> Non-AC Push Back</label>
+                </div>
+                <div class="sidebar-section">
+                    <h5>Departure Time</h5>
+                    <label class="check-row"><input type="checkbox" id="f-time-1" onchange="applyFilters()" checked> Before 6 AM</label>
+                    <label class="check-row"><input type="checkbox" id="f-time-2" onchange="applyFilters()" checked> 6 AM – 12 PM</label>
+                    <label class="check-row"><input type="checkbox" id="f-time-3" onchange="applyFilters()" checked> 12 PM – 6 PM</label>
+                    <label class="check-row"><input type="checkbox" id="f-time-4" onchange="applyFilters()" checked> After 6 PM</label>
+                </div>
+                <div class="sidebar-section">
+                    <h5>Rating</h5>
+                    <label class="check-row"><input type="checkbox" id="f-rating" onchange="applyFilters()"> 4+ rated only</label>
+                </div>
+                <div class="sidebar-section">
+                    <h5>Price Range</h5>
+                    <label class="check-row"><input type="checkbox" id="f-price-1" onchange="applyFilters()" checked> Below ₹500</label>
+                    <label class="check-row"><input type="checkbox" id="f-price-2" onchange="applyFilters()" checked> ₹500 – ₹1000</label>
+                    <label class="check-row"><input type="checkbox" id="f-price-3" onchange="applyFilters()" checked> Above ₹1000</label>
+                </div>
+            </aside>
+
+            <section class="results-list">
+                <div class="list-header" id="list-header">
+                    <span class="count" id="results-count">—</span>
+                    <div class="sort-options">
+                        <span class="sort-label">Sort by:</span>
+                        <button class="sort-btn active" onclick="sortBuses('departure')">Departure</button>
+                        <button class="sort-btn" onclick="sortBuses('price')">Price</button>
+                        <button class="sort-btn" onclick="sortBuses('rating')">Rating</button>
+                    </div>
+                </div>
+                <div id="bus-container">
+                    <div class="placeholder-msg">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#c5c9d6" stroke-width="1.5">
+                            <rect x="3" y="4" width="18" height="12" rx="2" />
+                            <path d="M3 10h18" />
+                            <circle cx="7" cy="19" r="2" />
+                            <circle cx="17" cy="19" r="2" />
+                        </svg>
+                        <p>Select your route and hit <strong>Search Buses</strong> to see available options.</p>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Seat Layout Modal -->
+    <div class="modal-backdrop" id="seat-layout-modal">
+        <div class="modal-box" style="max-width:380px">
+            <button class="modal-close" onclick="closeSeatModal()" aria-label="Close">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="6" x2="6" y2="18" />
+                    <line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
+            </button>
+            <div class="modal-top">
+                <h3>Select Seats</h3>
+                <p id="seat-modal-info" class="modal-subtext"></p>
+            </div>
+            <div class="seat-legend">
+                <div class="legend-item">
+                    <div class="seat seat-available"></div>Available
+                </div>
+                <div class="legend-item">
+                    <div class="seat seat-selected"></div>Selected
+                </div>
+                <div class="legend-item">
+                    <div class="seat seat-booked"></div>Booked
+                </div>
+            </div>
+            <div class="bus-interior">
+                <div class="steering-wheel">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ccc" stroke-width="2">
+                        <circle cx="12" cy="12" r="10" />
+                        <circle cx="12" cy="12" r="3" />
+                        <line x1="12" y1="2" x2="12" y2="9" />
+                        <line x1="12" y1="15" x2="12" y2="22" />
+                        <line x1="2" y1="12" x2="9" y2="12" />
+                        <line x1="15" y1="12" x2="22" y2="12" />
+                    </svg>
+                </div>
+                <div class="seat-grid" id="seat-grid"></div>
+            </div>
+            <div class="modal-form" style="padding-top:0; padding-bottom: 20px;">
+                <div
+                    style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom: 20px; padding-top: 16px; border-top: 1px solid #f0f2f5;">
+                    <div>
+                        <div style="font-size:0.7rem; color:#888; font-weight:700; letter-spacing:0.5px">SEATS</div>
+                        <div id="selected-seats-display"
+                            style="font-size:.95rem; font-weight:700; color:#1a1a2e; min-height: 20px; margin-top:2px;">
+                            None</div>
+                    </div>
+                    <div style="text-align:right;">
+                        <div style="font-size:0.7rem; color:#888; font-weight:700; letter-spacing:0.5px">TOTAL FARE
+                        </div>
+                        <div id="total-fare-display"
+                            style="font-size:1.2rem; font-weight:800; color:#d63031; margin-top:0px;">₹0</div>
+                    </div>
+                </div>
+                <div class="modal-actions" style="margin-top:0">
+                    <button type="button" class="btn-proceed" id="proceed-passenger-btn" disabled
+                        onclick="openPassengerModalFromSeats()" style="width:100%">Proceed</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Booking Modal -->
+    <div class="modal-backdrop" id="modal-backdrop">
+        <div class="modal-box">
+            <button class="modal-close" onclick="closeModal()" aria-label="Close">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="6" x2="6" y2="18" />
+                    <line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
+            </button>
+            <div class="modal-top">
+                <h3>Passenger Details</h3>
+                <p id="modal-info" class="modal-subtext"></p>
+            </div>
+            <form onsubmit="handleBooking(event)" class="modal-form">
+                <input type="hidden" id="modalBusNo">
+                <input type="hidden" id="modalSeatNumbers">
+
+                <!-- Per-seat passenger fields injected here by JS -->
+                <div id="passenger-fields-container"></div>
+
+                <!-- Shared contact info -->
+                <div class="form-row" style="margin-top:12px; padding-top:12px; border-top:1px solid #f0f2f5;">
+                    <div class="form-field">
+                        <label for="passengerEmail">Contact Email</label>
+                        <input type="email" id="passengerEmail" placeholder="To receive ticket" required>
+                    </div>
+                    <div class="form-field">
+                        <label for="passengerPhone">Phone Number</label>
+                        <input type="tel" id="passengerPhone" placeholder="To receive SMS updates" required>
+                    </div>
+                </div>
+
+                <div id="booking-message" class="msg-box"></div>
+                <div class="modal-actions">
+                    <button type="button" class="btn-cancel" onclick="closeModal()">Cancel</button>
+                    <button type="submit" class="btn-proceed" id="book-btn">Proceed to Payment</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Payment Modal -->
+    <div class="modal-backdrop" id="payment-modal">
+        <div class="modal-box" style="max-width: 420px; text-align: left;">
+            <button class="modal-close" onclick="closePaymentModal()" aria-label="Close">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="6" x2="6" y2="18" />
+                    <line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
+            </button>
+            <div class="modal-top" style="margin-bottom: 20px;">
+                <h3>Payment Details</h3>
+                <p class="modal-subtext">Complete your booking securely</p>
+            </div>
+            <div class="payment-summary">
+                <div class="ps-row">
+                    <span>Total Fare</span>
+                    <strong id="pay-total-amount">₹0</strong>
+                </div>
+            </div>
+            <form onsubmit="processPayment(event)" class="modal-form" style="padding-top: 10px;">
+                <div class="form-row" style="margin-bottom: 12px;">
+                    <div class="form-field" style="width: 100%;">
+                        <label>Card Number</label>
+                        <input type="text" placeholder="XXXX XXXX XXXX XXXX" required pattern="[0-9\s]{13,19}" maxlength="19">
+                    </div>
+                </div>
+                <div class="form-row" style="margin-bottom: 20px;">
+                    <div class="form-field">
+                        <label>Expiry Date</label>
+                        <input type="text" placeholder="MM/YY" required pattern="(0[1-9]|1[0-2])\/[0-9]{2}" maxlength="5">
+                    </div>
+                    <div class="form-field">
+                        <label>CVV</label>
+                        <input type="password" placeholder="XXX" required pattern="[0-9]{3,4}" maxlength="4">
+                    </div>
+                </div>
+                <div id="payment-message" class="msg-box"></div>
+                <button type="submit" class="btn-proceed" id="pay-now-btn" style="width: 100%; font-size: 1rem; padding: 14px;">Pay Now</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Sign In Modal -->
+    <div class="modal-backdrop" id="signin-modal">
+        <div class="modal-box" style="max-width:400px">
+            <button class="modal-close" onclick="document.getElementById('signin-modal').style.display='none'"
+                aria-label="Close">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="6" x2="6" y2="18" />
+                    <line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
+            </button>
+            <div class="modal-top">
+                <h3>Sign In</h3>
+                <p class="modal-subtext">Access your bookings and manage trips</p>
+            </div>
+            <div class="modal-form">
+                <div class="form-field">
+                    <label>Email</label>
+                    <input type="email" id="loginEmail" placeholder="you@email.com">
+                </div>
+                <div class="form-field">
+                    <label>Password</label>
+                    <input type="password" id="loginPass" placeholder="Enter password">
+                </div>
+                <div id="login-msg" class="msg-box"></div>
+                <div class="modal-actions" style="flex-direction:column;gap:8px">
+                    <button type="button" class="btn-proceed" style="width:100%" onclick="handleLogin()">Sign
+                        In</button>
+                    <p style="text-align:center;font-size:.82rem;color:#888;margin-top:8px">Don't have an account? <a
+                            href="#" style="color:#d63031;font-weight:600"
+                            onclick="event.preventDefault();document.getElementById('signin-modal').style.display='none';document.getElementById('register-modal').style.display='block'">Register</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Register Modal -->
+    <div class="modal-backdrop" id="register-modal">
+        <div class="modal-box" style="max-width:420px">
+            <button class="modal-close" onclick="document.getElementById('register-modal').style.display='none'"
+                aria-label="Close">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="6" x2="6" y2="18" />
+                    <line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
+            </button>
+            <div class="modal-top">
+                <h3>Create Account</h3>
+                <p class="modal-subtext">Join OnyxBus and start booking buses instantly</p>
+            </div>
+            <div class="modal-form">
+                <div class="form-field">
+                    <label>Full Name</label>
+                    <input type="text" id="regName" placeholder="Enter your full name">
+                </div>
+                <div class="form-field">
+                    <label>Email</label>
+                    <input type="email" id="regEmail" placeholder="you@email.com">
+                </div>
+                <div class="form-field">
+                    <label>Phone Number</label>
+                    <input type="tel" id="regPhone" placeholder="+91 9876543210">
+                </div>
+                <div class="form-field">
+                    <label>Password</label>
+                    <input type="password" id="regPass" placeholder="Minimum 6 characters">
+                </div>
+                <div id="reg-msg" class="msg-box"></div>
+                <div class="modal-actions" style="flex-direction:column;gap:8px">
+                    <button type="button" class="btn-proceed" style="width:100%" onclick="handleRegister()">Create
+                        Account</button>
+                    <p style="text-align:center;font-size:.82rem;color:#888;margin-top:8px">Already have an account? <a
+                            href="#" style="color:#d63031;font-weight:600"
+                            onclick="event.preventDefault();document.getElementById('register-modal').style.display='none';document.getElementById('signin-modal').style.display='block'">Sign
+                            In</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="site-footer">
+        <div class="container footer-grid">
+            <div class="footer-col">
+                <h5>About OnyxBus</h5>
+                <p>India's trusted online bus ticket booking platform. We partner with 100+ operators across 500+ routes
+                    nationwide.</p>
+            </div>
+            <div class="footer-col">
+                <h5>Quick Links</h5>
+                <a href="/">Bus Tickets</a>
+                <a href="/my-trips.html">My Trips</a>
+                <a href="/cancel.html">Cancel Ticket</a>
+                <a href="/contact.html">Contact</a>
+            </div>
+            <div class="footer-col">
+                <h5>Top Routes</h5>
+                <a href="/?src=Chennai&dst=Bangalore">Chennai → Bangalore</a>
+                <a href="/?src=Bangalore&dst=Hyderabad">Bangalore → Hyderabad</a>
+                <a href="/?src=Chennai&dst=Coimbatore">Chennai → Coimbatore</a>
+                <a href="/?src=Mumbai&dst=Pune">Mumbai → Pune</a>
+            </div>
+            <div class="footer-col">
+                <h5>Support</h5>
+                <a href="/contact.html">Help Center</a>
+                <a href="/terms.html">Terms of Service</a>
+                <a href="/privacy.html">Privacy Policy</a>
+                <a href="/cancel.html">Refund Policy</a>
+            </div>
+        </div>
+        <div class="container footer-bottom">
+            <p>&copy; 2026 OnyxBus Technologies Pvt. Ltd. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="app.js"></script>
+    <script>
+        // --- Registration (DB-backed) ---
+        async function handleRegister() {
+            const name = document.getElementById('regName').value.trim();
+            const email = document.getElementById('regEmail').value.trim();
+            const phone = document.getElementById('regPhone').value.trim();
+            const pass = document.getElementById('regPass').value.trim();
+            const m = document.getElementById('reg-msg');
+            if (!name || !email || !pass) { m.className = 'msg-box msg-err'; m.textContent = 'Please fill in all required fields.'; m.style.display = 'block'; return; }
+            if (pass.length < 6) { m.className = 'msg-box msg-err'; m.textContent = 'Password must be at least 6 characters.'; m.style.display = 'block'; return; }
+            m.className = 'msg-box'; m.textContent = 'Creating account...'; m.style.display = 'block';
+            try {
+                const res = await fetch('/api/register', {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, email, phone, password: pass })
+                });
+                const r = await res.json();
+                m.className = 'msg-box ' + (r.success ? 'msg-ok' : 'msg-err');
+                m.textContent = r.message;
+                if (r.success) {
+                    setTimeout(() => {
+                        document.getElementById('register-modal').style.display = 'none';
+                        document.getElementById('signin-modal').style.display = 'block';
+                        m.style.display = 'none';
+                    }, 1500);
+                }
+            } catch (e) { m.className = 'msg-box msg-err'; m.textContent = 'Server connection failed.'; m.style.display = 'block'; }
+        }
+
+        // --- Login (DB-backed) ---
+        async function handleLogin() {
+            const email = document.getElementById('loginEmail').value.trim();
+            const pass = document.getElementById('loginPass').value.trim();
+            const m = document.getElementById('login-msg');
+            if (!email || !pass) { m.className = 'msg-box msg-err'; m.textContent = 'Please fill in both fields.'; m.style.display = 'block'; return; }
+            m.className = 'msg-box'; m.textContent = 'Signing in...'; m.style.display = 'block';
+            try {
+                const res = await fetch('/api/login', {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password: pass })
+                });
+                const r = await res.json();
+                m.className = 'msg-box ' + (r.success ? 'msg-ok' : 'msg-err');
+                m.textContent = r.message;
+                if (r.success) {
+                    localStorage.setItem('onyxbus_user', JSON.stringify(r.user));
+                    setTimeout(() => {
+                        document.getElementById('signin-modal').style.display = 'none';
+                        m.style.display = 'none';
+                        updateNavForUser(r.user);
+                    }, 1200);
+                }
+            } catch (e) { m.className = 'msg-box msg-err'; m.textContent = 'Server connection failed.'; m.style.display = 'block'; }
+        }
+
+        // Show user name in nav after login
+        function updateNavForUser(user) {
+            const btn = document.querySelector('.btn-nav-login');
+            if (btn) {
+                btn.textContent = 'Hi, ' + user.name.split(' ')[0];
+                btn.onclick = function () {
+                    if (confirm('Sign out?')) {
+                        localStorage.removeItem('onyxbus_user');
+                        btn.textContent = 'Sign In';
+                        btn.onclick = function () { document.getElementById('signin-modal').style.display = 'block'; };
+                    }
+                };
+            }
+        }
+
+        // Restore session on load
+        (function () {
+            const u = localStorage.getItem('onyxbus_user');
+            if (u) { try { updateNavForUser(JSON.parse(u)); } catch (e) { } }
+        })();
+
+        // Close modals on backdrop click
+        window.addEventListener('click', e => {
+            if (e.target.id === 'signin-modal') document.getElementById('signin-modal').style.display = 'none';
+            if (e.target.id === 'register-modal') document.getElementById('register-modal').style.display = 'none';
+        });
+    </script>
+</body>
+
+</html>
