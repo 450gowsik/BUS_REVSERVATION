@@ -288,32 +288,72 @@
                 <h3>Payment Details</h3>
                 <p class="modal-subtext">Complete your booking securely</p>
             </div>
-            <div class="payment-summary">
+
+            <div class="payment-tabs" style="display:flex; border-bottom:1px solid #eee; margin-bottom:16px;">
+                <button type="button" class="pay-tab active" onclick="switchPaymentTab('card')" id="tab-card" style="flex:1; padding:10px; background:none; border:none; border-bottom:2px solid #d63031; color:#d63031; font-weight:600; cursor:pointer;">Debit / Credit Card</button>
+                <button type="button" class="pay-tab" onclick="switchPaymentTab('upi')" id="tab-upi" style="flex:1; padding:10px; background:none; border:none; border-bottom:2px solid transparent; color:#666; font-weight:600; cursor:pointer;">UPI / GPay</button>
+                <button type="button" class="pay-tab" onclick="switchPaymentTab('razorpay')" id="tab-razorpay" style="flex:1; padding:10px; background:none; border:none; border-bottom:2px solid transparent; color:#666; font-weight:600; cursor:pointer;">Razorpay</button>
+            </div>
+
+            <div class="payment-summary" style="margin-bottom: 12px;">
                 <div class="ps-row">
                     <span>Total Fare</span>
                     <strong id="pay-total-amount">₹0</strong>
                 </div>
             </div>
-            <form onsubmit="processPayment(event)" class="modal-form" style="padding-top: 10px;">
-                <div class="form-row" style="margin-bottom: 12px;">
-                    <div class="form-field" style="width: 100%;">
-                        <label>Card Number</label>
-                        <input type="text" placeholder="XXXX XXXX XXXX XXXX" required pattern="[0-9\s]{13,19}" maxlength="19">
+
+            <div id="card-form-container">
+                <form onsubmit="processPayment(event)" class="modal-form" style="padding-top: 10px;">
+                    <div class="form-row" style="margin-bottom: 12px;">
+                        <div class="form-field" style="width: 100%;">
+                            <label>Card Number</label>
+                            <input type="text" placeholder="XXXX XXXX XXXX XXXX" required pattern="[0-9\s]{13,19}" maxlength="19">
+                        </div>
                     </div>
-                </div>
-                <div class="form-row" style="margin-bottom: 20px;">
-                    <div class="form-field">
-                        <label>Expiry Date</label>
-                        <input type="text" placeholder="MM/YY" required pattern="(0[1-9]|1[0-2])\/[0-9]{2}" maxlength="5">
+                    <div class="form-row" style="margin-bottom: 20px;">
+                        <div class="form-field">
+                            <label>Expiry Date</label>
+                            <input type="text" placeholder="MM/YY" required pattern="(0[1-9]|1[0-2])\/[0-9]{2}" maxlength="5">
+                        </div>
+                        <div class="form-field">
+                            <label>CVV</label>
+                            <input type="password" placeholder="XXX" required pattern="[0-9]{3,4}" maxlength="4">
+                        </div>
                     </div>
-                    <div class="form-field">
-                        <label>CVV</label>
-                        <input type="password" placeholder="XXX" required pattern="[0-9]{3,4}" maxlength="4">
+                    <div id="payment-message" class="msg-box"></div>
+                    <button type="submit" class="btn-proceed" id="pay-now-btn" style="width: 100%; font-size: 1rem; padding: 14px;">Pay Now</button>
+                </form>
+            </div>
+
+            <div id="upi-form-container" style="display:none;">
+                <form onsubmit="processUPIPayment(event)" class="modal-form" style="padding-top: 10px;">
+                    <div class="form-row" style="margin-bottom: 16px;">
+                        <div class="form-field" style="width: 100%;">
+                            <label>UPI ID / Phone Number</label>
+                            <input type="text" id="upi-id-input" placeholder="e.g. 9876543210@okicici or 9876543210" required>
+                        </div>
                     </div>
-                </div>
-                <div id="payment-message" class="msg-box"></div>
-                <button type="submit" class="btn-proceed" id="pay-now-btn" style="width: 100%; font-size: 1rem; padding: 14px;">Pay Now</button>
-            </form>
+
+                    <div style="background-color: #f8f9fa; border: 1px solid #e9ecef; border-left: 3px solid #3498db; padding: 10px 12px; margin-bottom: 16px; font-size: 0.75rem; color: #666; border-radius: 4px; line-height: 1.4;">
+                        <strong>Note:</strong> Real GPay Notifications Require a Verified Business Account. To trigger an actual push notification to someone's Google Pay app, we would need to integrate a real Payment Gateway API (like Razorpay, Stripe, or Cashfree). Only verified, registered businesses can use these APIs to request money via UPI. This is a simulated flow.
+                    </div>
+                    
+                    <div style="text-align:center; margin-bottom: 16px; display:flex; align-items:center; justify-content:center; gap:12px;">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/f/f2/Google_Pay_Logo.svg" alt="GPay" style="height:20px;">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/e/e1/UPI-Logo-vector.svg" alt="UPI" style="height:20px;">
+                    </div>
+
+                    <div id="upi-payment-message" class="msg-box"></div>
+                    <button type="submit" class="btn-proceed" id="upi-pay-now-btn" style="width: 100%; font-size: 1rem; padding: 14px;">Request Payment on GPay</button>
+                </form>
+            </div>
+
+            <div id="razorpay-form-container" style="display:none; text-align:center; padding: 20px 0;">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/8/89/Razorpay_logo.svg" alt="Razorpay" style="height:32px; margin-bottom: 20px;">
+                <p style="font-size: 0.95rem; color:#555; margin-bottom: 24px; line-height:1.5;">You will be securely redirected to the simulated Razorpay Checkout portal to complete your payment.</p>
+                <div id="rzp-payment-message" class="msg-box"></div>
+                <button type="button" class="btn-proceed" id="rzp-pay-now-btn" onclick="processRazorpayPayment(event)" style="width: 100%; font-size: 1rem; padding: 14px; background-color:#3395FF;">Pay securely with Razorpay</button>
+            </div>
         </div>
     </div>
 

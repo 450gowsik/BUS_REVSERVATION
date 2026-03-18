@@ -396,6 +396,14 @@ async function handleBooking(e) {
     const total = selectedSeats.length * selectedPrice;
     document.getElementById('pay-total-amount').textContent = '₹' + total.toLocaleString('en-IN');
     document.getElementById('payment-message').style.display = 'none';
+    
+    // Reset to card tab when opening
+    if (typeof switchPaymentTab === 'function') switchPaymentTab('card');
+    const upiMsg = document.getElementById('upi-payment-message');
+    if (upiMsg) upiMsg.style.display = 'none';
+    const rzpMsg = document.getElementById('rzp-payment-message');
+    if (rzpMsg) rzpMsg.style.display = 'none';
+
     document.getElementById('payment-modal').style.display = 'block';
     document.body.style.overflow = 'hidden';
 }
@@ -443,6 +451,143 @@ async function processPayment(e) {
         msg.textContent = 'Server connection failed.'; 
         msg.style.display = 'block';
         btn.textContent = 'Retry Payment';
+        btn.disabled = false;
+    } finally { 
+        bookingInProgress = false; 
+    }
+}
+
+function switchPaymentTab(method) {
+    const tabCard = document.getElementById('tab-card');
+    const tabUpi = document.getElementById('tab-upi');
+    const tabRazorpay = document.getElementById('tab-razorpay');
+    const formCard = document.getElementById('card-form-container');
+    const formUpi = document.getElementById('upi-form-container');
+    const formRazorpay = document.getElementById('razorpay-form-container');
+
+    tabCard.style.borderBottom = '2px solid transparent';
+    tabCard.style.color = '#666';
+    tabUpi.style.borderBottom = '2px solid transparent';
+    tabUpi.style.color = '#666';
+    if(tabRazorpay) {
+        tabRazorpay.style.borderBottom = '2px solid transparent';
+        tabRazorpay.style.color = '#666';
+    }
+    
+    formCard.style.display = 'none';
+    formUpi.style.display = 'none';
+    if(formRazorpay) formRazorpay.style.display = 'none';
+
+    if (method === 'card') {
+        tabCard.style.borderBottom = '2px solid #d63031';
+        tabCard.style.color = '#d63031';
+        formCard.style.display = 'block';
+    } else if (method === 'upi') {
+        tabUpi.style.borderBottom = '2px solid #d63031';
+        tabUpi.style.color = '#d63031';
+        formUpi.style.display = 'block';
+    } else if (method === 'razorpay') {
+        if(tabRazorpay) {
+            tabRazorpay.style.borderBottom = '2px solid #3395FF';
+            tabRazorpay.style.color = '#3395FF';
+        }
+        if(formRazorpay) formRazorpay.style.display = 'block';
+    }
+}
+
+async function processUPIPayment(e) {
+    e.preventDefault();
+    if (bookingInProgress) return;
+    bookingInProgress = true;
+
+    const btn = document.getElementById('upi-pay-now-btn');
+    const msg = document.getElementById('upi-payment-message');
+    const upiId = document.getElementById('upi-id-input').value.trim();
+    
+    btn.textContent = 'Waiting for approval on GPay...';
+    btn.disabled = true;
+    msg.style.display = 'none';
+
+    // Simulate longer delay for user approving on mobile
+    await new Promise(resolve => setTimeout(resolve, 3500));
+
+    try {
+        const res = await fetch('http://localhost:8081/api/book', {
+            method: 'POST', 
+            headers: { 'Content-Type': 'application/json' }, 
+            body: JSON.stringify(pendingBookingPayload)
+        });
+        const r = await res.json();
+        
+        msg.className = 'msg-box ' + (r.success ? 'msg-ok' : 'msg-err');
+        msg.textContent = r.message;
+        msg.style.display = 'block';
+
+        if (r.success) {
+            btn.textContent = 'Payment Successful!';
+            setTimeout(() => {
+                closePaymentModal();
+            }, 2000);
+        } else {
+            btn.textContent = 'Request Payment on GPay';
+            btn.disabled = false;
+        }
+    } catch (err) { 
+        msg.className = 'msg-box msg-err';
+        msg.textContent = 'Server connection failed.'; 
+        msg.style.display = 'block';
+        btn.textContent = 'Request Payment on GPay';
+        btn.disabled = false;
+    } finally { 
+        bookingInProgress = false; 
+    }
+}
+
+async function processRazorpayPayment(e) {
+    e.preventDefault();
+    if (bookingInProgress) return;
+    bookingInProgress = true;
+
+    const btn = document.getElementById('rzp-pay-now-btn');
+    const msg = document.getElementById('rzp-payment-message');
+    
+    btn.textContent = 'Authorizing with Razorpay...';
+    btn.disabled = true;
+    msg.style.display = 'none';
+
+    // Simulate opening razorpay modal
+    await new Promise(resolve => setTimeout(resolve, 1500));
+    btn.textContent = 'Processing Payment...';
+    
+    // Simulate payment processing
+    await new Promise(resolve => setTimeout(resolve, 2500));
+
+    try {
+        const res = await fetch('http://localhost:8081/api/book', {
+            method: 'POST', 
+            headers: { 'Content-Type': 'application/json' }, 
+            body: JSON.stringify(pendingBookingPayload)
+        });
+        const r = await res.json();
+        
+        msg.className = 'msg-box ' + (r.success ? 'msg-ok' : 'msg-err');
+        msg.textContent = r.message;
+        msg.style.display = 'block';
+
+        if (r.success) {
+            btn.textContent = 'Payment Successful!';
+            setTimeout(() => {
+                closePaymentModal();
+            }, 2000);
+        } else {
+            btn.textContent = 'Pay securely with Razorpay';
+            btn.disabled = false;
+        }
+    } catch (err) { 
+        msg.className = 'msg-box msg-err';
+        msg.textContent = 'Server connection failed.'; 
+        msg.style.display = 'block';
+        btn.textContent = 'Pay securely with Razorpay';
         btn.disabled = false;
     } finally { 
         bookingInProgress = false; 
